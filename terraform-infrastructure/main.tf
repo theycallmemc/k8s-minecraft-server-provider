@@ -122,8 +122,7 @@ data "template_cloudinit_config" "vm" {
     runcmd:
       - cd
       - date +"%T.%N"
-      - echo "Start"
-      - sleep 1
+      - echo "Start cloud init"
       - date +"%T.%N"
       - mkdir /tmp/workspace
       - cd /tmp/workspace
@@ -131,28 +130,36 @@ data "template_cloudinit_config" "vm" {
       - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
       - curl -sfL https://get.k3s.io | sh -
       - date +"%T.%N"
-      - echo "Sleeping"
-      - sleep 90
+      - echo "Sleeping - k3s installation"
+      - sleep 80
       - date +"%T.%N"
       - cp /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/registries.yaml /etc/rancher/k3s/registries.yaml
       - sudo systemctl restart k3s
       - date +"%T.%N"
-      - echo "Sleeping"
-      - sleep 90
+      - echo "Sleeping - k3s restart"
+      - sleep 80
       - date +"%T.%N"
       - mkdir /root/.kube
       - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-      - kubectl get nodes
+      - export KUBECONFIG=/root/.kube/config
+      - date +"%T.%N"
+      - echo "Building operator"
+      - date +"%T.%N"
       - cd /tmp/workspace/k8s-minecraft-server-provider/k8s-operator
       - docker build -t minecraft-operator-image .
       - docker run -d -p 5000:5000 --restart=always --name registry registry:2
       - docker tag minecraft-operator-image localhost:5000/minecraft-operator-image
       - docker push localhost:5000/minecraft-operator-image
       - kubectl apply -f operator-deployment.yaml
+      - date +"%T.%N"
+      - echo "Verify"
+      - sleep 1
+      - date +"%T.%N"
+      - docker ps
       - kubectl get nodes
+      - kubectl get pods --all-namespaces
       - date +"%T.%N"
       - echo "Done"
-      - sleep 1
       - date +"%T.%N"
     EOF
   }

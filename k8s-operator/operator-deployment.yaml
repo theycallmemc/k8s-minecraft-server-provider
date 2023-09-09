@@ -15,3 +15,6 @@ spec:
       containers:
       - name: minecraft-operator
         image: localhost:5000/minecraft-operator-image
+        env:
+        - name: KUBECONFIG
+          value: /root/.kube/config
