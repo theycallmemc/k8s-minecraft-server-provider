@@ -1,7 +1,9 @@
-from kubernetes import client, config, watch
-from kubernetes.client.rest import ApiException
+import kubernetes.client as client
+import kubernetes.config as config
+import kubernetes.watch as watch
 import yaml
 
+# Load Kubernetes configuration
 config.load_kube_config()
 v1 = client.CoreV1Api()
 
@@ -37,7 +39,7 @@ def create_pod(name, external_port):
         v1.create_namespaced_pod(NAMESPACE, pod_manifest)
         v1.create_namespaced_service(NAMESPACE, service_manifest)
         print(f"Pod {name} and service created successfully")
-    except ApiException as e:
+    except Exception as e:
         print(f"Failed to create pod {name}: {e}")
 
 def delete_pod(name):
@@ -45,7 +47,7 @@ def delete_pod(name):
         v1.delete_namespaced_pod(name, NAMESPACE)
         v1.delete_namespaced_service(name, NAMESPACE)
         print(f"Pod {name} and service deleted successfully")
-    except ApiException as e:
+    except Exception as e:
         print(f"Failed to delete pod {name}: {e}")
 
 def watch_pods():
@@ -60,8 +62,6 @@ def watch_pods():
 
 def apply_crd_from_yaml(file_path):
     try:
-        config.load_kube_config() 
-
         api_instance = client.ApiextensionsV1Api()
 
         with open(file_path, "r") as crd_file:
@@ -70,10 +70,10 @@ def apply_crd_from_yaml(file_path):
 
         print("CRD created successfully.")
 
-    except ApiException as e:
+    except Exception as e:
         print(f"Exception when creating CRD: {e}")
 
 if __name__ == '__main__':
-    crd_yaml_file = "minecraft-crd.yaml"
+    crd_yaml_file = "./minecraft-crd.yaml"
     apply_crd_from_yaml(crd_yaml_file)
     watch_pods()
