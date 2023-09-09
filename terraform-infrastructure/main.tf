@@ -125,9 +125,6 @@ data "template_cloudinit_config" "vm" {
       - curl -L -o /tmp/minikube-download/minikube-linux-amd64 https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
       - sudo install /tmp/minikube-download/minikube-linux-amd64 /usr/local/bin/minikube
       - minikube start --driver=docker --addons=ingress --memory 2000 --cpus 2 --force
-      - mkdir -p ~/.kube
-      - export KUBECONFIG=~/.kube/config
-      - chmod 600 ~/.kube/config
       - mkdir /tmp/helm-download
       - curl -fsSL -o /tmp/helm-download/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
       - chmod 700 /tmp/helm-download/get_helm.sh
@@ -135,7 +132,7 @@ data "template_cloudinit_config" "vm" {
       - mkdir /tmp/workspace
       - cd /tmp/workspace
       - git clone https://github.com/fl028/k8s-minecraft-server-provider.git
-      - pip install /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
+      - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
     EOF
   }
 }
