@@ -153,11 +153,10 @@ data "template_cloudinit_config" "vm" {
       - kubectl apply -f operator-deployment.yaml
       - date +"%T.%N"
       - echo "Verify"
-      - sleep 1
+      - sleep 5
       - date +"%T.%N"
       - docker ps
-      - kubectl get nodes
-      - kubectl get pods --all-namespaces
+      - kubectl get pods,services -A -o wide
       - date +"%T.%N"
       - echo "Done"
       - date +"%T.%N"
