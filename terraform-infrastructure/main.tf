@@ -121,18 +121,14 @@ data "template_cloudinit_config" "vm" {
   content = <<EOF
     runcmd:
       - cd
-      - mkdir /tmp/minikube-download
-      - curl -L -o /tmp/minikube-download/minikube-linux-amd64 https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-      - sudo install /tmp/minikube-download/minikube-linux-amd64 /usr/local/bin/minikube
-      - minikube start --driver=docker --addons=ingress --memory 2000 --cpus 2 --force
-      - mkdir /tmp/helm-download
-      - curl -fsSL -o /tmp/helm-download/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-      - chmod 700 /tmp/helm-download/get_helm.sh
-      - /tmp/helm-download/get_helm.sh
       - mkdir /tmp/workspace
       - cd /tmp/workspace
       - git clone https://github.com/fl028/k8s-minecraft-server-provider.git
       - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
+      - curl -sfL https://get.k3s.io | sh -
+      - mkdir /root/.kube
+      - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
+      - kubectl get nodes
     EOF
   }
 }

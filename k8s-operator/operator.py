@@ -1,5 +1,6 @@
 from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
+import yaml
 
 config.load_kube_config()
 v1 = client.CoreV1Api()
@@ -57,5 +58,22 @@ def watch_pods():
         elif event['type'] == 'DELETED':
             delete_pod(name)
 
+def apply_crd_from_yaml(file_path):
+    try:
+        config.load_kube_config() 
+
+        api_instance = client.ApiextensionsV1Api()
+
+        with open(file_path, "r") as crd_file:
+            crd_manifest = yaml.safe_load(crd_file)
+            api_instance.create_custom_resource_definition(body=crd_manifest)
+
+        print("CRD created successfully.")
+
+    except ApiException as e:
+        print(f"Exception when creating CRD: {e}")
+
 if __name__ == '__main__':
+    crd_yaml_file = "minecraft-crd.yaml"
+    apply_crd_from_yaml(crd_yaml_file)
     watch_pods()
