@@ -121,19 +121,28 @@ data "template_cloudinit_config" "vm" {
   content = <<EOF
     runcmd:
       - cd
-      - echo "### Cloning workspace ###"
+      - date +"%T.%N"
+      - echo "Start"
+      - sleep 1
+      - date +"%T.%N"
       - mkdir /tmp/workspace
       - cd /tmp/workspace
       - git clone https://github.com/fl028/k8s-minecraft-server-provider.git
       - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
-      - echo "### Installing k3s ###"
       - curl -sfL https://get.k3s.io | sh -
-      - echo -e 'mirrors:\n  "localhost:5000":\n    endpoint:\n      - "http://localhost:5000"' | sudo tee /etc/rancher/k3s/registries.yaml > /dev/null
+      - date +"%T.%N"
+      - echo "Sleeping"
+      - sleep 90
+      - date +"%T.%N"
+      - cp /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/registries.yaml /etc/rancher/k3s/registries.yaml
       - sudo systemctl restart k3s
+      - date +"%T.%N"
+      - echo "Sleeping"
+      - sleep 90
+      - date +"%T.%N"
       - mkdir /root/.kube
       - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
       - kubectl get nodes
-      - echo "### Creating operator ###"
       - cd /tmp/workspace/k8s-minecraft-server-provider/k8s-operator
       - docker build -t minecraft-operator-image .
       - docker run -d -p 5000:5000 --restart=always --name registry registry:2
@@ -141,6 +150,10 @@ data "template_cloudinit_config" "vm" {
       - docker push localhost:5000/minecraft-operator-image
       - kubectl apply -f operator-deployment.yaml
       - kubectl get nodes
+      - date +"%T.%N"
+      - echo "Done"
+      - sleep 1
+      - date +"%T.%N"
     EOF
   }
 }
