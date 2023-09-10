@@ -144,19 +144,21 @@ data "template_cloudinit_config" "vm" {
       - sleep 80
       - date +"%T.%N"
       - echo "Cube config"
-      - mkdir ~/.kube
-      - cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-      - export KUBECONFIG=~/.kube/config
+      - mkdir /root/.kube
+      - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
+      - export KUBECONFIG=/root/.kube/config
+      - date +"%T.%N"
+      - echo "Docker setup"
+      - docker run -d -p 5000:5000 --restart=always --name registry registry:2
       - date +"%T.%N"
       - echo "Building operator"
       - cd /tmp/workspace/k8s-minecraft-server-provider/k8s-operator
       - docker build -t minecraft-operator-image .
-      - docker run -d -p 5000:5000 --restart=always --name registry registry:2
       - docker tag minecraft-operator-image localhost:5000/minecraft-operator-image
       - docker push localhost:5000/minecraft-operator-image
       - kubectl apply -f operator-deployment.yaml
       - date +"%T.%N"
-      - echo "Verify"
+      - echo "Verify - docker and kube pods"
       - sleep 6
       - date +"%T.%N"
       - docker ps
