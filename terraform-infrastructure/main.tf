@@ -158,10 +158,13 @@ data "template_cloudinit_config" "vm" {
       - docker push localhost:5000/minecraft-operator-image
       - kubectl apply -f operator-deployment.yaml
       - date +"%T.%N"
-      - echo "Verify - docker and kube pods"
+      - echo "Verify"
       - sleep 6
       - date +"%T.%N"
       - docker ps
+      - echo
+      - kubectl cluster-info
+      - echo
       - kubectl get pods,services -A -o wide
       - date +"%T.%N"
       - echo "Done"
