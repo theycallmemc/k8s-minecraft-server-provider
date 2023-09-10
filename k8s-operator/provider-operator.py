@@ -62,6 +62,7 @@ def watch_pods():
 
 def apply_crd_from_yaml(file_path):
     try:
+        config.load_kube_config()
         api_instance = client.ApiextensionsV1Api()
 
         with open(file_path, "r") as crd_file:

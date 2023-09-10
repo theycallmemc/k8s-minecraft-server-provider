@@ -123,12 +123,16 @@ data "template_cloudinit_config" "vm" {
       - cd
       - date +"%T.%N"
       - echo "Start cloud init"
-      - date +"%T.%N"
       - mkdir /tmp/workspace
       - cd /tmp/workspace
+      - date +"%T.%N"
+      - echo "Clone repo"
       - git clone https://github.com/fl028/k8s-minecraft-server-provider.git
       - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
-      - curl -sfL https://get.k3s.io | sh -
+      - date +"%T.%N"
+      - echo "Start k3s installation"
+      - ufw disable
+      - curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode=644
       - date +"%T.%N"
       - echo "Sleeping - k3s installation"
       - sleep 80
@@ -139,12 +143,12 @@ data "template_cloudinit_config" "vm" {
       - echo "Sleeping - k3s restart"
       - sleep 80
       - date +"%T.%N"
-      - mkdir /root/.kube
-      - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-      - export KUBECONFIG=/root/.kube/config
+      - echo "Cube config"
+      - mkdir ~/.kube
+      - cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      - export KUBECONFIG=~/.kube/config
       - date +"%T.%N"
       - echo "Building operator"
-      - date +"%T.%N"
       - cd /tmp/workspace/k8s-minecraft-server-provider/k8s-operator
       - docker build -t minecraft-operator-image .
       - docker run -d -p 5000:5000 --restart=always --name registry registry:2
@@ -153,13 +157,12 @@ data "template_cloudinit_config" "vm" {
       - kubectl apply -f operator-deployment.yaml
       - date +"%T.%N"
       - echo "Verify"
-      - sleep 5
+      - sleep 6
       - date +"%T.%N"
       - docker ps
       - kubectl get pods,services -A -o wide
       - date +"%T.%N"
       - echo "Done"
-      - date +"%T.%N"
     EOF
   }
 }

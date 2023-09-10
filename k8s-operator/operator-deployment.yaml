@@ -17,11 +17,11 @@ spec:
         image: localhost:5000/minecraft-operator-image
         volumeMounts:
         - name: kubeconfig-volume
-          mountPath: /root/.kube
+          mountPath: ~/.kube
         env:
         - name: KUBECONFIG
-          value: /root/.kube/config
+          value: ~/.kube/config
       volumes:
       - name: kubeconfig-volume
         hostPath:
-          path: /root/.kube
+          path: ~/.kube
