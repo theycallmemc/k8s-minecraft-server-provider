@@ -23,12 +23,13 @@ resource "azurerm_subnet" "terraform_subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-# Create public IPs (only one is needed)
+# Create public IP
 resource "azurerm_public_ip" "public_ip" {
   name                = "PublicIP"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
+  domain_name_label = "fl028"
 }
 
 # Create Network Security Group and rule
@@ -50,13 +51,13 @@ resource "azurerm_network_security_group" "terraform_nsg" {
   }
 
   security_rule {
-    name                       = "HTTPS"
-    priority                   = 1002  # You can adjust the priority as needed to control rule evaluation order
+    name                       = "HTTP"
+    priority                   = 1002
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "443"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -64,7 +65,6 @@ resource "azurerm_network_security_group" "terraform_nsg" {
 
 # Associate public IP with network interface of virtual machine
 resource "azurerm_network_interface" "terraform_nic" {
-  count               = 1 
   name                = "NIC1"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -79,19 +79,15 @@ resource "azurerm_network_interface" "terraform_nic" {
 
 # Generate random text for unique storage account name
 resource "random_id" "random_id" {
-  count = 1  
-
   keepers = {
     resource_group = azurerm_resource_group.rg.name
   }
-
   byte_length = 8
 }
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "storage_account" {
-  count                   = 1 
-  name                    = "diag${random_id.random_id[0].hex}"
+  name                    = "diag${random_id.random_id.hex}"
   location                = azurerm_resource_group.rg.location
   resource_group_name     = azurerm_resource_group.rg.name
   account_tier            = "Standard"
@@ -151,12 +147,12 @@ data "template_cloudinit_config" "vm" {
       - echo "Docker setup"
       - docker run -d -p 5000:5000 --restart=always --name registry registry:2
       - date +"%T.%N"
-      - echo "Building operator"
-      - cd /tmp/workspace/k8s-minecraft-server-provider/k8s-operator
-      - docker build -t minecraft-operator-image .
-      - docker tag minecraft-operator-image localhost:5000/minecraft-operator-image
-      - docker push localhost:5000/minecraft-operator-image
-      - kubectl apply -f operator-deployment.yaml
+      - echo "Helm setup"
+      - mkdir /tmp/helm-download
+      - curl -fsSL -o /tmp/helm-download/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      - chmod 700 /tmp/helm-download/get_helm.sh
+      - /tmp/helm-download/get_helm.sh
+      - sleep 10
       - date +"%T.%N"
       - echo "Verify"
       - sleep 6
@@ -167,18 +163,25 @@ data "template_cloudinit_config" "vm" {
       - echo
       - kubectl get pods,services -A -o wide
       - date +"%T.%N"
+      - echo
+      - echo "Wordpress demo"
+      - cd /tmp/workspace
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm repo update
+      - helm install myapp bitnami/wordpress
+      - kubectl apply -f /tmp/workspace/k8s-minecraft-server-provider/wordpress-demo-deploy/wordpress-ingress.yaml
+      - date +"%T.%N"
       - echo "Done"
     EOF
   }
 }
 
-# Create virtual machine (only one is needed)
+# Create virtual machine
 resource "azurerm_linux_virtual_machine" "terraform_vm" {
-  count                  = 1 
   name                   = "vm1"
   location               = azurerm_resource_group.rg.location
   resource_group_name    = azurerm_resource_group.rg.name
-  network_interface_ids  = [azurerm_network_interface.terraform_nic[0].id]  # Use the first network interface
+  network_interface_ids  = [azurerm_network_interface.terraform_nic.id]  # Use the first network interface
   size                   = "Standard_B2s"
 
   custom_data = data.template_cloudinit_config.vm.rendered 
@@ -205,7 +208,7 @@ resource "azurerm_linux_virtual_machine" "terraform_vm" {
   }
 
   boot_diagnostics {
-    storage_account_uri = azurerm_storage_account.storage_account[0].primary_blob_endpoint  # Use the storage account for the first VM
+    storage_account_uri = azurerm_storage_account.storage_account.primary_blob_endpoint  # Use the storage account for the first VM
   }
 }
 
