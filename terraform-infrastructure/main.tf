@@ -61,6 +61,18 @@ resource "azurerm_network_security_group" "terraform_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  security_rule {
+    name                       = "MC"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "30001"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 # Associate public IP with network interface of virtual machine
@@ -162,14 +174,6 @@ data "template_cloudinit_config" "vm" {
       - kubectl cluster-info
       - echo
       - kubectl get pods,services -A -o wide
-      - date +"%T.%N"
-      - echo
-      - echo "Wordpress demo"
-      - cd /tmp/workspace
-      - helm repo add bitnami https://charts.bitnami.com/bitnami
-      - helm repo update
-      - helm install myapp bitnami/wordpress
-      - kubectl apply -f /tmp/workspace/k8s-minecraft-server-provider/wordpress-demo-deploy/wordpress-ingress.yaml
       - date +"%T.%N"
       - echo "Done"
     EOF

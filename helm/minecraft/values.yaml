@@ -1,0 +1,20 @@
+node:
+  hostname: 'vm1'
+minecraft:
+  gamemode: 'survival'
+  motd: 'mc pod' 
+  internal_port: 25565
+  exposed_port: 30001
+
+volume:
+  storage: 3Gi
+  path: '/tmp/workspace/minecraft-data'
+
+resources:
+  limits:
+    memory: 2Gi
+  requests:
+    memory: 1.5Gi
+
+serviceAccount:
+  create: true
