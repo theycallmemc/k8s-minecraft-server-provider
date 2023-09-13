@@ -63,16 +63,17 @@ resource "azurerm_network_security_group" "terraform_nsg" {
   }
 
   security_rule {
-    name                       = "MC"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "30001"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+  name                       = "MC"
+  priority                   = 1003
+  direction                  = "Inbound"
+  access                     = "Allow"
+  protocol                   = "Tcp"
+  source_port_range          = "*"
+  destination_port_range     = "30001-30010"
+  source_address_prefix      = "*"
+  destination_address_prefix = "*"
+}
+
 }
 
 # Associate public IP with network interface of virtual machine
@@ -136,34 +137,24 @@ data "template_cloudinit_config" "vm" {
       - date +"%T.%N"
       - echo "Clone repo"
       - git clone https://github.com/fl028/k8s-minecraft-server-provider.git
-      - pip install -r /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/requirements.txt
       - date +"%T.%N"
       - echo "Start k3s installation"
       - ufw disable
       - curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode=644
       - date +"%T.%N"
       - echo "Sleeping - k3s installation"
-      - sleep 80
-      - date +"%T.%N"
-      - cp /tmp/workspace/k8s-minecraft-server-provider/k8s-operator/registries.yaml /etc/rancher/k3s/registries.yaml
-      - sudo systemctl restart k3s
-      - date +"%T.%N"
-      - echo "Sleeping - k3s restart"
-      - sleep 80
+      - sleep 60
       - date +"%T.%N"
       - echo "Cube config"
       - mkdir /root/.kube
       - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
       - export KUBECONFIG=/root/.kube/config
       - date +"%T.%N"
-      - echo "Docker setup"
-      - docker run -d -p 5000:5000 --restart=always --name registry registry:2
-      - date +"%T.%N"
       - echo "Helm setup"
-      - mkdir /tmp/helm-download
-      - curl -fsSL -o /tmp/helm-download/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-      - chmod 700 /tmp/helm-download/get_helm.sh
-      - /tmp/helm-download/get_helm.sh
+      - mkdir /tmp/workspace/helm-download
+      - curl -fsSL -o /tmp/workspace/helm-download/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      - chmod 700 /tmp/workspace/helm-download/get_helm.sh
+      - /tmp/workspace/helm-download/get_helm.sh
       - sleep 10
       - date +"%T.%N"
       - echo "Verify"
