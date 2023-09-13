@@ -2,7 +2,7 @@ node:
   hostname: 'vm1'
 minecraft:
   gamemode: 'survival'
-  motd: 'mc pod' 
+  motd: 'my-mc-pod-1' 
   internal_port: 25565
   exposed_port: 30001
 

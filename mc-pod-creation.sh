@@ -9,8 +9,7 @@ servername="$1"
 internal_port="$2"
 exposed_port="$3"
 
-unique_folder_name="minecraft-data-$servername"
-folder_path="/tmp/minecraft-data/$unique_folder_name"
+folder_path="/tmp/minecraft-data/$servername"
 mkdir -p "$folder_path"
 chmod 777 "$folder_path"
 

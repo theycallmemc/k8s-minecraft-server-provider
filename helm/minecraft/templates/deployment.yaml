@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: minecraft-server
+  name: {{ printf "minecraft-server-%s" .Values.minecraft.motd }}
   labels:
-    app: minecraft-server
+    app: {{ printf "minecraft-server-%s" .Values.minecraft.motd }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minecraft-server
+      app: {{ printf "minecraft-server-%s" .Values.minecraft.motd }}
   template:
     metadata:
       labels:
-        app: minecraft-server
+        app: {{ printf "minecraft-server-%s" .Values.minecraft.motd }}
     spec:
       volumes:
-      - name: minecraft-data
+      - name: {{ printf "minecraft-data-%s" .Values.minecraft.motd }}
         persistentVolumeClaim:
-          claimName: minecraft-data-pvc
+          claimName: {{ printf "minecraft-data-pvc-%s" .Values.minecraft.motd }}
       containers:
-      - name: minecraft-server
+      - name: {{ printf "minecraft-server-%s" .Values.minecraft.motd }}
         image: itzg/minecraft-server:latest
         resources:
           limits:
@@ -40,7 +40,7 @@ spec:
         - containerPort: {{ .Values.minecraft.internal_port }}
           name: minecraft
         volumeMounts:
-          - name: minecraft-data
+          - name:  {{ printf "minecraft-data-%s" .Values.minecraft.motd }}
             mountPath:  /data
         readinessProbe:
           exec:
