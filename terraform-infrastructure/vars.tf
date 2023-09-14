@@ -1,13 +1,18 @@
-variable "subscription_id" {
+variable "SUBSCRIPTION_ID" {
 }
 
-variable "tenant_id" {
+variable "TENANT_ID" {
 }
 
-variable "client_id" {
+variable "CLIENT_ID" {
 }
 
-variable "client_secret" {
+variable "CLIENT_SECRET" {
+}
+
+variable "PROJECT_ROOT_PATH" {
+  description = "Path to the project root directory"
+  type        = string
 }
 
 variable "resource_group_location" {

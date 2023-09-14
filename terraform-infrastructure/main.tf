@@ -211,3 +211,13 @@ resource "azurerm_linux_virtual_machine" "terraform_vm" {
 output "ssh_command_vm1"{
   value = "ssh -i ./private_key.pem azureadmin@${azurerm_public_ip.public_ip.ip_address}"
 }
+
+resource "local_file" "vscode_ssh_config" {
+  filename = "vscode_ssh_config"
+  content = <<-EOF
+    Host vm1
+        HostName ${azurerm_public_ip.public_ip.ip_address}
+        User azureadmin
+        IdentityFile ${var.PROJECT_ROOT_PATH}\terraform-infrastructure\${var.private_key_filename}
+  EOF
+}
