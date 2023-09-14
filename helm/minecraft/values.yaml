@@ -1,5 +1,6 @@
 node:
   hostname: 'vm1'
+  
 minecraft:
   gamemode: 'survival'
   motd: 'my-mc-pod-1' 
@@ -11,10 +12,12 @@ volume:
   path: '/tmp/workspace/minecraft-data'
 
 resources:
-  limits:
-    memory: 2Gi
   requests:
-    memory: 1.5Gi
+    cpu: "1000m"
+    memory: "2Gi"
+  limits:
+    cpu: "2000m"
+    memory: "3Gi"
 
 serviceAccount:
   create: true

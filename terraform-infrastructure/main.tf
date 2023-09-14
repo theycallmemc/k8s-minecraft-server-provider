@@ -171,13 +171,13 @@ data "template_cloudinit_config" "vm" {
   }
 }
 
-# Create virtual machine
+# Create virtual machine (Standard B4ms (4 vcpus, 16 GiB memory))
 resource "azurerm_linux_virtual_machine" "terraform_vm" {
   name                   = "vm1"
   location               = azurerm_resource_group.rg.location
   resource_group_name    = azurerm_resource_group.rg.name
-  network_interface_ids  = [azurerm_network_interface.terraform_nic.id]  # Use the first network interface
-  size                   = "Standard_B2s"
+  network_interface_ids  = [azurerm_network_interface.terraform_nic.id] 
+  size                   = "Standard_B4ms"          
 
   custom_data = data.template_cloudinit_config.vm.rendered 
 
@@ -187,7 +187,7 @@ resource "azurerm_linux_virtual_machine" "terraform_vm" {
   os_disk {
     name                 = "osdisk1"
     caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+    storage_account_type = "Premium_LRS"
   }
 
   source_image_reference {
