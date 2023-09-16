@@ -10,3 +10,6 @@ my-terraform-actions.bat
 
 # generated vs code config
 vscode_ssh_config
+
+# testing
+tmp/

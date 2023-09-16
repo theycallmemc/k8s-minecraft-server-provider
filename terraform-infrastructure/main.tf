@@ -29,7 +29,7 @@ resource "azurerm_public_ip" "public_ip" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
-  domain_name_label = "fl028"
+  domain_name_label =  var.SERVER_DOMAIN
 }
 
 # Create Network Security Group and rule
@@ -157,6 +157,8 @@ data "template_cloudinit_config" "vm" {
       - /tmp/workspace/helm-download/get_helm.sh
       - sleep 10
       - date +"%T.%N"
+      - echo "docker setup"
+      - docker run -d -p 5000:5000 --restart=always --name registry registry:2
       - echo "Verify"
       - sleep 6
       - date +"%T.%N"

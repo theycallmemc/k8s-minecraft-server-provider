@@ -1,13 +1,27 @@
-variable "SUBSCRIPTION_ID" {
+variable "AZURE_SUBSCRIPTION_ID" {
+  description = "Azure config"
+  type        = string
 }
 
-variable "TENANT_ID" {
+variable "AZURE_TENANT_ID" {
+  description = "Azure config"
+  type        = string
 }
 
-variable "CLIENT_ID" {
+variable "AZURE_CLIENT_ID" {
+  description = "Azure config"
+  type        = string
 }
 
-variable "CLIENT_SECRET" {
+variable "AZURE_CLIENT_SECRET" {
+  description = "Azure config"
+  type        = string
+}
+
+variable "SERVER_DOMAIN" {
+  description = "Your server domain name"
+  type        = string
+  default     = "fl028"
 }
 
 variable "PROJECT_ROOT_PATH" {
