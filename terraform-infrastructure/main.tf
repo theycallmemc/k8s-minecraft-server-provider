@@ -168,6 +168,8 @@ data "template_cloudinit_config" "vm" {
       - echo
       - kubectl get pods,services -A -o wide
       - date +"%T.%N"
+      - echo minecraft data prep
+      - mkdir /tmp/workspace/minecraft-data
       - echo "Done"
     EOF
   }

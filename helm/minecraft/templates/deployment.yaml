@@ -42,6 +42,7 @@ spec:
         volumeMounts:
           - name:  {{ printf "minecraft-data-%s" .Values.minecraft.motd }}
             mountPath:  /data
+            subPath: {{ .Values.minecraft.motd }}
         readinessProbe:
           exec:
             command:
